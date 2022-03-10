@@ -2,8 +2,7 @@
 
 namespace Common\Validator;
 
-use Common\Contracts\IValidatorImplementation;
-use stdClass;
+use Common\Contracts\IValidatorImplementation; 
 
 class ArgsValidator extends Validator implements IValidatorImplementation
 {

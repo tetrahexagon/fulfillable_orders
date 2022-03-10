@@ -5,6 +5,8 @@ require __DIR__ . '/vendor/autoload.php';
 
 use \Common\ConfigManager;
 use \Common\Validator\ArgsValidator;
+use Common\FileReader;
+
 class FulFillableOrders 
 {
 
@@ -15,12 +17,14 @@ class FulFillableOrders
         $this->configManager = new ConfigManager(); 
         $argsValidator = new ArgsValidator(); 
         $argsValidator->validate(compact("argc","argv"));
-        die(var_dump($argc,$argv));
+        
         if(!$argsValidator->valid()){
 
             $argsValidator->printErrors();
             exit(1);
         }
+        $this->fileReader = new FileReader($this->configManager->getEnv("orders_csv"));
+        $this->fileReader->loadContent();
     } 
 
 
