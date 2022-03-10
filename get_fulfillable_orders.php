@@ -13,9 +13,8 @@ class FulFillableOrders
     public function __construct(int $argc,array $argv)
     {
         $this->configManager = new ConfigManager(); 
-        $argsValidator = new ArgsValidator();
-        $arg = "";
-        $argsValidator->validate(compact("arg","argv"));
+        $argsValidator = new ArgsValidator(); 
+        $argsValidator->validate(compact("argc","argv"));
         if(!$argsValidator->valid()){
 
             $argsValidator->printErrors();
