@@ -4,20 +4,29 @@ namespace App;
 require __DIR__ . '/vendor/autoload.php';
 
 use \Common\ConfigManager;
-
-class FulFillableOrders {
+use \Common\Validator\ArgsValidator;
+class FulFillableOrders 
+{
 
     public $configManager;
 
-    public function __construct()
+    public function __construct(int $argc,array $argv)
     {
         $this->configManager = new ConfigManager(); 
-    }
+        $argsValidator = new ArgsValidator();
+        $arg = "";
+        $argsValidator->validate(compact("arg","argv"));
+        if(!$argsValidator->valid()){
+
+            $argsValidator->printErrors();
+            exit(1);
+        }
+    } 
 
 
 
 }
 
-$fulFillableOrders = New FulFillableOrders();
+$fulFillableOrders = New FulFillableOrders($argc,$argv);
 
 
