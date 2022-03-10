@@ -1,5 +1,5 @@
 <?php
-namespace App;
+
 
 require __DIR__ . '/vendor/autoload.php';
 
@@ -15,6 +15,7 @@ class FulFillableOrders
         $this->configManager = new ConfigManager(); 
         $argsValidator = new ArgsValidator(); 
         $argsValidator->validate(compact("argc","argv"));
+        die(var_dump($argc,$argv));
         if(!$argsValidator->valid()){
 
             $argsValidator->printErrors();

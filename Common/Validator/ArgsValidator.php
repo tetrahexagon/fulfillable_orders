@@ -14,7 +14,7 @@ class ArgsValidator extends Validator implements IValidatorImplementation
         ]);
     }
 
-    protected function setValues(array $params){
+    public function setValues(array $params): void{
         
         $this->values = $params;
     }
@@ -27,7 +27,7 @@ class ArgsValidator extends Validator implements IValidatorImplementation
     }
     
 
-    private function fieldsExists()
+    public function fieldsExists()
     {
         $valueKeys  = array_keys($this->values);
         $ruleKeys   = array_keys($this->rules);
@@ -43,8 +43,9 @@ class ArgsValidator extends Validator implements IValidatorImplementation
                 return true;
             }
         }
-        
-        $this->addGeneralError("[".get_class($this)."]Number of parameters are ambiguous");
+
+        $this->addGeneralError("[".get_class($this)."] Number of parameters are ambiguous");
+        return false;
     
     }
 
@@ -52,16 +53,17 @@ class ArgsValidator extends Validator implements IValidatorImplementation
     {
         
         if($this->applyAncientRules()){
-            if($this->validateIntegerValue($this->values["argc"],2)){
+            if(!$this->validateIntegerValue($this->values["argc"],2)){
                 $this->addError("argc","2 (int)","intValueError");
             }
         }
+        
         return is_null($this->errors);
     }
 
     public function validateIntegerValue($param, int $value): bool
-    {
-        return ($value === filter_var($param, FILTER_VALIDATE_INT   ));
+    { 
+        return ($value === filter_var($param, FILTER_VALIDATE_INT));
     }
 
     
