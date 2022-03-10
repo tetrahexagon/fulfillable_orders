@@ -18,4 +18,10 @@ class ConfigManager {
         
         return $this->config[$key] ?? "N/A";
     }
+
+    public static function getSingleOption($key){
+        $config = parse_ini_file(__DIR__ . '/../config/env.ini');
+
+        return $config[$key] ?? "N/A";
+    }
 }

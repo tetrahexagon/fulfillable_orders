@@ -12,22 +12,46 @@ class FileReader implements IFileReader {
     protected $fileExt;
     protected $row;
     protected $handle;
-
     protected  $parser;
 
+    protected $fileIsOpened = false;
+    
     public function __construct(string $file)
     {
         $this->fileName = pathinfo($file, PATHINFO_BASENAME);
         $this->fileExt  = pathinfo($file, PATHINFO_EXTENSION);
-        $this->openForRead($file);     
+
+        if(!$this->openForRead($file)){
+            
+            if(\Common\ConfigManager::getSingleOption("debug_mode") == 0){                
+                exit(1);
+            } 
+        }
 
     } 
 
-    public function loadContent(): void {
+    public function resetRow(): void
+    {
+        $this->rows = 0;
+    }
+
+    public function setFileIsOpened(bool $value): void
+    {
+        $this->fileIsOpened = $value;
+    }
+
+    public function getFileIsOpened(): bool
+    {
+        return $this->fileIsOpened;
+    }
+
+    public function loadContent(): bool 
+    {
+        $result = false;
         try{
         
             $this->initFileParser();
-            $this->readFileContent();
+            $result = $this->readFileContent();
 
         }catch(\Exception $e){
 
@@ -37,43 +61,70 @@ class FileReader implements IFileReader {
             $this->closeFile();
         }
 
-
-        die(var_dump($this->parser->getContent()));
+        return $result; 
     }
-    public function initFileParser(): void
+    public function initFileParser(): bool
+    {   
+        try{
+            $this->parser = new ReflectionClass("Common\Parser\\".strtoupper($this->fileExt)."Parser");
+            $this->parser = $this->parser->newInstance();
+        }catch(\Exception $e){
+
+            $this->closeFile();
+            echo $e->getMessage()."\n";
+            return false;
+        }
+        
+        return true;
+    }
+
+    public function readFileContent(): bool
     {
-        $this->parser = new ReflectionClass("Common\Parser\\".strtoupper($this->fileExt)."Parser");
-        $this->parser = $this->parser->newInstance();
-    }
-
-    public function readFileContent(){
         
         $this->resetRow();
-        while( ($data = $this->parser->parseRow($this->handle)))
-        {
-            if($this->row == 0) //In the old code there was an error, the header row is in the row 0.
-            { 
-                $this->parser->setHeader($data);
-            }else{
-                $this->parser->addDataRow($data);
+        try{
+            while( ($data = $this->parser->parseRow($this->handle)))
+            {
+                if($this->row == 0) //In the old code there was an error, the header row is in the row 0.
+                { 
+                    $this->parser->setHeader($data);
+                }else{
+                    $this->parser->addDataRow($data);
+                }
+    
+                $this->row++;
             }
+        }catch(\Exception $e){
+            echo $e->getMessage()."\n";
+            
+            $this->parser->setHeader([]);
+            $this->parser->setContent([]);
 
-            $this->row++;
+            return false;
         }
+        
+        return true;
     }
  
-    public function resetRow(): void
-    {
-        $this->rows = 0;
-    }
+    
 
-    public function openForRead($file):void
+    public function openForRead($file): void
     {
-        $this->handle = fopen($file,"r");
+        try{
+            $this->handle = fopen($file,"r");
+        }catch(\Exception $e){
+            echo $e->getMessage()."\n";
+            $this->setFileIsOpened(false); 
+            return ;
+        }
+        $this->setFileIsOpened(true); 
     }
 
     public function closeFile(): void
     {
-        fclose($this->handle);
+        if($this->fileIsOpened)
+            fclose($this->handle);
+
+        $this->setFileIsOpened(false);
     }
 }

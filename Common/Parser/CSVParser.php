@@ -19,6 +19,11 @@ class CSVParser implements IFileParser{
         return fgetcsv($handle);
     }
 
+    public function setContent(mixed $data): void
+    {
+        $this->data = $data;
+    }
+    
     public function getContent(): mixed
     {
         return $this->data;
@@ -44,4 +49,6 @@ class CSVParser implements IFileParser{
 
         $this->data[]=  $tmp;
     }
+
+    
 }
