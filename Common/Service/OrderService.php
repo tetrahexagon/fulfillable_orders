@@ -4,19 +4,24 @@ namespace Common\Service;
 
 use \Common\Contracts\Service\IOrderService;
 use \Common\Parser\JSONParser;
+use \Common\Service\Console;
 
 class OrderService implements IOrderService {
 
-    protected mixed $rawOrders;
-    protected mixed $sortedOrders;
+    protected mixed $rawOrders  =   null;
+    protected array $sortedOrders;
     protected array $fulFillableOrders;
     protected object $stock;
 
     protected $jsonParser;
+    protected $console;
+    protected $translator;
 
     public function __construct()
     {
-        $this->jsonParser = new JSONParser();
+        $this->jsonParser   = new JSONParser();
+        $this->console      = new Console();
+        $this->translator   = new Translator();
     }
 
     public function setOrders($rawData): void
@@ -31,18 +36,15 @@ class OrderService implements IOrderService {
 
     public function sortOrders(): bool
     {
-        $this->sortedOrders = $this->rawOrders;
-        try{
-            usort($this->sortedOrders, function($a, $b) {
+        $tmp = $this->rawOrders;
+
+        $result = usort($tmp, function($a, $b) {
                 $pc = -1 * ($a['priority'] <=> $b['priority']);
                 return $pc == 0 ? $a['created_at'] <=> $b['created_at'] : $pc;
-            });
-        }catch(\Exception $e){
-            echo $e->getMessage()."\n";
-            return false;
-        }
-
-        return true;
+            }); 
+        $this->sortedOrders = $tmp; 
+        
+        return $result;
         
     }
 
@@ -82,8 +84,38 @@ class OrderService implements IOrderService {
         return $this->stock;
     }
 
-    public function buildFulFillableOrders()
+    public function buildFulFillableOrders(): void
     {
+        foreach($this->sortedOrders as $orderItem)
+        {
+            if($this->stock->{$orderItem['product_id']} >= $orderItem['quantity']){
+                $this->fulFillableOrders []= $orderItem;
+            } 
+        } 
+    }
 
+    public function printFulFillableOrders( array $header = [] ): void
+    {        
+        foreach($header as $element){
+            $this->console->printFormatted($element);
+        }
+        $this->console->newLine();
+
+        foreach($header as $element){
+            $this->console->printLine("=");
+        }
+        $this->console->newLine();
+
+        foreach($this->fulFillableOrders as $orderItem)
+        {
+            foreach($header as $headerItem){
+                if($headerItem == 'priority'){
+                    $orderItem['priority'] = $this->translator->get('prio_'.$orderItem['priority']); 
+                } 
+                $this->console->printFormatted($orderItem[$headerItem]);
+            }
+            $this->console->newLine();
+
+        }
     }
 }

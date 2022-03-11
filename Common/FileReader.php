@@ -105,8 +105,16 @@ class FileReader implements IFileReader {
         
         return true;
     }
- 
-    
+
+    public function getReadedHeader(): mixed 
+    {
+        return $this->parser->getHeader();
+    }
+
+    public function getReadedContent(): mixed 
+    {
+        return $this->parser->getContent();
+    }   
 
     public function openForRead($file): void
     {

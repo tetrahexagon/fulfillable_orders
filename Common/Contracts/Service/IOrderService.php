@@ -56,5 +56,19 @@ interface IOrderService {
      */
     public function getStock(): object;
 
+    /**
+     * Filters the fulfillable orders into fulFillableOrders prop
+     * 
+     * @return void
+     */
+    public function buildFulFillableOrders(): void;
+
+    /**
+     * Prints the fulfillable orders in formatted style to console
+     * 
+     * @param array $header - contains column titles 
+     */
+    public function printFulFillableOrders( array $header = [] ): void;
+
 
 }

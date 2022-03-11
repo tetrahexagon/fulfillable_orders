@@ -13,11 +13,13 @@ class FulFillableOrders
 
     public $configManager;
     public $orderService;
+    public $fileReader;
 
     public function __construct(int $argc,array $argv)
     {
         $this->configManager    = new ConfigManager(); 
         $this->orderService     = new OrderService();
+        $this->fileReader = new FileReader($this->configManager->getEnv("orders_csv"));
         $argsValidator = new ArgsValidator(); 
         $argsValidator->validate(compact("argc","argv"));
         
@@ -26,10 +28,17 @@ class FulFillableOrders
             $argsValidator->printErrors();
             exit(1);
         }
-        $this->fileReader = new FileReader($this->configManager->getEnv("orders_csv"));
+        
+        
         $this->fileReader->loadContent();
         
-        $this->orderService->buildStock($argv[1]); 
+        
+        $this->orderService->setOrders($this->fileReader->getReadedContent());
+        $this->orderService->buildStock($argv[1]);
+        $this->orderService->sortOrders(); 
+
+        $this->orderService->buildFulFillableOrders();        
+        $this->orderService->printFulFillableOrders($this->fileReader->getReadedHeader()); 
     } 
 
 

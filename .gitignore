@@ -2,6 +2,7 @@ composer.phar
 /vendor/
 /config/*
 !/config/env_example.ini
+!/config/translations.ini
 /storage
 .phpunit.result.cache
 

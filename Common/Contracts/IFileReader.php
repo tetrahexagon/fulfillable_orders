@@ -34,4 +34,19 @@ interface IFileReader {
      * loads file content into parser
      */
     public function loadContent(): bool;
+    
+    /**
+     * return with readed file's header
+     *  
+     * @return mixed
+    */
+    public function getReadedHeader(): mixed;
+    
+    
+    /**
+     * return with readed file's content 
+     * 
+     * @return mixed
+    */
+    public function getReadedContent(): mixed;
 }

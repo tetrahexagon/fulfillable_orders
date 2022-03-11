@@ -35,7 +35,7 @@ class JsonParserTest extends TestCase
         
         $this->assertTrue($this->parser->getError(),"An error happened during the json parsing");
         $this->assertIsObject($result,"Result of JSON parsing");
-        $this->assertGreaterThan(0,count( (array) $result));
+        $this->assertEquals(0,count( (array) $result));
     }
 }
     
