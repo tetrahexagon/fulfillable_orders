@@ -4,7 +4,7 @@ if ($argc != 2) {
     echo 'Ambiguous number of parameters!';
     exit(1);
 }
-//Még be kell húzni
+
 if (($stock = json_decode($argv[1])) == null) {
     echo 'Invalid json!';
     exit(1);
@@ -35,7 +35,6 @@ usort($orders, function ($a, $b) {
     return $pc == 0 ? $a['created_at'] <=> $b['created_at'] : $pc;
 });
 
-//be kell húzni
 foreach ($ordersH as $h) {
     echo str_pad($h, 20);
 }
