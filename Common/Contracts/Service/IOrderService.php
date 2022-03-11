@@ -41,5 +41,20 @@ interface IOrderService {
      */
     public function getFulFillableOrders(): mixed;
 
+    /**
+     * Reads stock info from string and builds it into manageable object
+     * @param string $rawStock
+     * 
+     * @return void
+     */
+    public function buildStock(string $rawStock): void;
+
+    /**
+     * Getter for stock info/data
+     * 
+     * @return object
+     */
+    public function getStock(): object;
+
 
 }

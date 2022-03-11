@@ -4,8 +4,7 @@
     } ,
     "autoload": {
         "psr-4": {
-            "Common\\": "Common/",
-            "Service\\": "Service/"
+            "Common\\": "Common/"
         }
     }
 }
