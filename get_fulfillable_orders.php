@@ -27,11 +27,9 @@ class FulFillableOrders
 
             $argsValidator->printErrors();
             exit(1);
-        }
+        }        
         
-        
-        $this->fileReader->loadContent();
-        
+        $this->fileReader->loadContent();        
         
         $this->orderService->setOrders($this->fileReader->getReadedContent());
         $this->orderService->buildStock($argv[1]);
